@@ -23,6 +23,8 @@ class Enum extends Field {
 
 		$options = $this->suppliedOptions;
 
+		$overrideKeys = $this->checkIfKeysShouldBeOverwritten($options);
+
 		$dataOptions = $options['options'];
 		$options['options'] = array();
 
@@ -30,12 +32,31 @@ class Enum extends Field {
 		foreach ($dataOptions as $val => $text)
 		{
 			$options['options'][] = array(
-				'id' => is_numeric($val) ? $text : $val,
+				'id' => ($overrideKeys and is_numeric($val)) ? $text : $val,
 				'text' => $text,
 			);
 		}
 
 		$this->suppliedOptions = $options;
+	}
+
+	/**
+	 * Check if the keys of an array are standard numerical vs unstandard numerical
+	 *
+	 * @param array									$options
+	 */
+	public function checkIfKeysShouldBeOverwritten($options)
+	{
+		$index = 0;
+		foreach($options['options'] as $key => $value)
+		{
+			if($key != $index)
+			{
+				return false;
+			}
+			$index++;
+		}
+		return true;
 	}
 
 	/**
